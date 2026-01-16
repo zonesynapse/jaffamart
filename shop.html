@@ -1,0 +1,575 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>Shop Owner Dashboard</title>
+    <style>
+        :root{
+            --bg:#f4f5f6;
+            --card:#fff;
+            --muted:#8b8f94;
+            --accent:#111;
+            --pill:#efefef;
+            --pill-active:#fff;
+            --border:#eaeaea;
+            --shadow:0 6px 18px rgba(22,24,26,.06);
+            --btn-dark:#1c1c1c;
+            --btn-dark-2:#101010;
+            --radius:12px;
+            font-family: Inter, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial;
+        }
+        body{
+            margin:0;
+            background:var(--bg);
+            min-height:100vh;
+        }
+        .container{
+            max-width:900px;
+            margin:32px auto;
+            background:var(--card);
+            border-radius:18px;
+            box-shadow:var(--shadow);
+            padding:32px 24px;
+            border:1px solid rgba(15,15,15,0.03);
+        }
+        .shop-header{
+            display:flex;
+            align-items:center;
+            gap:18px;
+            margin-bottom:18px;
+        }
+        .shop-logo{
+            width:56px;
+            height:56px;
+            border-radius:12px;
+            object-fit:cover;
+            background:#eee;
+            box-shadow:0 2px 6px rgba(0,0,0,.04);
+        }
+        .shop-title{
+            font-size:1.6rem;
+            font-weight:600;
+            color:var(--accent);
+        }
+        .shop-desc{
+            color:var(--muted);
+            font-size:1rem;
+        }
+        .tabs{
+            display:flex;
+            gap:8px;
+            margin-bottom:18px;
+        }
+        .tabs button{
+            border:0;
+            background:var(--pill);
+            padding:8px 22px;
+            border-radius:10px;
+            font-size:15px;
+            color:var(--muted);
+            cursor:pointer;
+        }
+        .tabs button.active{
+            background:var(--pill-active);
+            color:var(--accent);
+            box-shadow:0 2px 6px rgba(16,18,20,.06);
+            border:1px solid rgba(0,0,0,0.04);
+        }
+        .card{
+            background:var(--card);
+            border-radius:14px;
+            box-shadow:var(--shadow);
+            padding:18px;
+            margin-bottom:18px;
+            border:1px solid var(--border);
+        }
+        .form-row{
+            display:flex;
+            gap:18px;
+            flex-wrap:wrap;
+        }
+        .form-group{
+            flex:1;
+            min-width:180px;
+            display:flex;
+            flex-direction:column;
+            margin-bottom:12px;
+        }
+        label{
+            font-size:13px;
+            color:var(--muted);
+            margin-bottom:6px;
+        }
+        input[type="text"], input[type="number"], input[type="file"], textarea{
+            height:44px;
+            border-radius:10px;
+            border:1px solid var(--border);
+            padding:0 12px;
+            font-size:15px;
+            outline:none;
+            background:#fff;
+            color:var(--accent);
+            box-sizing:border-box;
+        }
+        textarea{
+            height:44px;
+            resize:vertical;
+        }
+        input[type="file"]{
+            padding:8px 12px;
+            height:auto;
+        }
+        input:focus, textarea:focus{
+            border-color:rgba(17,24,33,.12);
+            box-shadow:0 6px 18px rgba(17,24,33,.04);
+        }
+        .submit{
+            height:44px;
+            border-radius:10px;
+            border:0;
+            background:linear-gradient(180deg,var(--btn-dark),var(--btn-dark-2));
+            color:#fff;
+            font-weight:600;
+            font-size:16px;
+            cursor:pointer;
+            box-shadow:0 6px 16px rgba(17,24,33,.12);
+            margin-top:8px;
+        }
+        .menu-list{
+            display:flex;
+            flex-wrap:wrap;
+            gap:18px;
+        }
+        .menu-item{
+            background:var(--card);
+            border-radius:12px;
+            box-shadow:0 2px 8px rgba(17,24,33,.06);
+            border:1px solid var(--border);
+            padding:14px;
+            width:220px;
+            display:flex;
+            flex-direction:column;
+            align-items:center;
+            position:relative;
+        }
+        .menu-item.unavailable{
+            opacity:0.6;
+        }
+        .availability-badge{
+            position:absolute;
+            top:10px;
+            right:10px;
+            padding:4px 10px;
+            border-radius:20px;
+            font-size:11px;
+            font-weight:600;
+            cursor:pointer;
+            user-select:none;
+            transition:all 0.2s;
+        }
+        .availability-badge.available{
+            background:#10b981;
+            color:#fff;
+        }
+        .availability-badge.unavailable{
+            background:#ef4444;
+            color:#fff;
+        }
+        .availability-badge:hover{
+            transform:scale(1.05);
+        }
+        .menu-img{
+            width:80px;
+            height:80px;
+            border-radius:10px;
+            object-fit:cover;
+            background:#eee;
+            margin-bottom:10px;
+            cursor:pointer;
+        }
+        .menu-name{
+            font-weight:600;
+            font-size:1.1rem;
+            margin-bottom:4px;
+            color:var(--accent);
+            cursor:pointer;
+            width:100%;
+            text-align:center;
+        }
+        .menu-desc{
+            color:var(--muted);
+            font-size:0.95rem;
+            margin-bottom:6px;
+            text-align:center;
+            cursor:pointer;
+            width:100%;
+        }
+        .menu-price{
+            font-weight:500;
+            color:var(--btn-dark);
+            font-size:1rem;
+            cursor:pointer;
+        }
+        .edit-hint{
+            font-size:11px;
+            color:var(--muted);
+            margin-top:8px;
+            font-style:italic;
+        }
+        .modal{
+            display:none;
+            position:fixed;
+            top:0;
+            left:0;
+            width:100%;
+            height:100%;
+            background:rgba(0,0,0,0.5);
+            z-index:1000;
+            align-items:center;
+            justify-content:center;
+        }
+        .modal.show{
+            display:flex;
+        }
+        .modal-content{
+            background:var(--card);
+            border-radius:18px;
+            padding:28px;
+            width:min(500px,90%);
+            max-height:90vh;
+            overflow-y:auto;
+            box-shadow:0 20px 50px rgba(0,0,0,0.2);
+        }
+        .modal-header{
+            font-size:1.4rem;
+            font-weight:600;
+            margin-bottom:18px;
+            color:var(--accent);
+        }
+        .modal-close{
+            position:absolute;
+            top:12px;
+            right:12px;
+            background:none;
+            border:none;
+            font-size:24px;
+            cursor:pointer;
+            color:var(--muted);
+        }
+        .modal-buttons{
+            display:flex;
+            gap:12px;
+            margin-top:18px;
+        }
+        .btn-cancel{
+            flex:1;
+            height:44px;
+            border-radius:10px;
+            border:1px solid var(--border);
+            background:transparent;
+            color:var(--accent);
+            font-weight:600;
+            cursor:pointer;
+        }
+        .btn-save{
+            flex:1;
+            height:44px;
+            border-radius:10px;
+            border:0;
+            background:linear-gradient(180deg,var(--btn-dark),var(--btn-dark-2));
+            color:#fff;
+            font-weight:600;
+            cursor:pointer;
+        }
+        .empty{
+            color:var(--muted);
+            text-align:center;
+            margin:24px 0;
+        }
+        @media(max-width:600px){
+            .container{padding:12px;}
+            .menu-item{width:100%;}
+        }
+    </style>
+</head>
+<body>
+    <div class="container" id="mainContainer">
+        <!-- Shop setup form (shown if not set) -->
+        <form id="shopSetupForm" class="card" enctype="multipart/form-data" style="display:none">
+            <h2>Setup your shop</h2>
+            <div class="form-row">
+                <div class="form-group">
+                    <label for="shopName">Shop Name</label>
+                    <input type="text" id="shopName" required placeholder="Enter shop name" />
+                </div>
+                <div class="form-group">
+                    <label for="shopDesc">Description</label>
+                    <input type="text" id="shopDesc" required placeholder="Enter shop description" />
+                </div>
+                <div class="form-group">
+                    <label for="shopLogo">Logo</label>
+                    <input type="file" id="shopLogo" accept="image/*" required />
+                </div>
+            </div>
+            <button type="submit" class="submit">Save Shop</button>
+        </form>
+
+        <!-- Dashboard (hidden until shop setup) -->
+        <div id="dashboard" style="display:none">
+            <div class="shop-header">
+                <img id="shopLogoImg" class="shop-logo" src="" alt="Shop Logo" style="display:none" />
+                <div>
+                    <div class="shop-title" id="shopTitle"></div>
+                    <div class="shop-desc" id="shopDescText"></div>
+                </div>
+            </div>
+            <div class="tabs">
+                <button id="tabMenu" class="active">Menu</button>
+                <button id="tabOrders">Orders (0)</button>
+            </div>
+            <div id="tabMenuPanel">
+                <form id="menuForm" class="card" enctype="multipart/form-data">
+                    <h3>Add Menu Item</h3>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="itemName">Name</label>
+                            <input type="text" id="itemName" required placeholder="Item name" />
+                        </div>
+                        <div class="form-group">
+                            <label for="itemDesc">Description</label>
+                            <input type="text" id="itemDesc" required placeholder="Item description" />
+                        </div>
+                        <div class="form-group">
+                            <label for="itemPrice">Price</label>
+                            <input type="number" id="itemPrice" required min="0" step="0.01" value="0.00" />
+                        </div>
+                        <div class="form-group">
+                            <label for="itemImg">Image</label>
+                            <input type="file" id="itemImg" accept="image/*" required />
+                        </div>
+                    </div>
+                    <button type="submit" class="submit">Add Item</button>
+                </form>
+                <div class="card">
+                    <h3>Menu Items (<span id="menuCount">0</span>)</h3>
+                    <div id="menuList" class="menu-list"></div>
+                    <div id="menuEmpty" class="empty">No menu items yet</div>
+                </div>
+            </div>
+            <div id="tabOrdersPanel" style="display:none">
+                <div class="card">
+                    <h3>Orders</h3>
+                    <div class="empty">No orders yet</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Edit Menu Item Modal -->
+    <div id="editModal" class="modal">
+        <div class="modal-content">
+            <button class="modal-close" onclick="closeEditModal()">&times;</button>
+            <div class="modal-header">Edit Menu Item</div>
+            <form id="editForm">
+                <div class="form-group">
+                    <label for="editItemName">Name</label>
+                    <input type="text" id="editItemName" required placeholder="Item name" />
+                </div>
+                <div class="form-group">
+                    <label for="editItemDesc">Description</label>
+                    <input type="text" id="editItemDesc" required placeholder="Item description" />
+                </div>
+                <div class="form-group">
+                    <label for="editItemPrice">Price</label>
+                    <input type="number" id="editItemPrice" required min="0" step="0.01" value="0.00" />
+                </div>
+                <div class="form-group">
+                    <label for="editItemImg">Image</label>
+                    <input type="file" id="editItemImg" accept="image/*" />
+                    <small style="color:var(--muted); margin-top:4px;">Leave empty to keep current image</small>
+                </div>
+                <div class="modal-buttons">
+                    <button type="button" class="btn-cancel" onclick="closeEditModal()">Cancel</button>
+                    <button type="submit" class="btn-save">Save Changes</button>
+                </div>
+            </form>
+        </div>
+    </div>
+    <script>
+        // State
+        let shop = null;
+        let menuItems = [];
+        let currentEditIndex = -1;
+        // Elements
+        const shopSetupForm = document.getElementById('shopSetupForm');
+        const dashboard = document.getElementById('dashboard');
+        const shopLogoImg = document.getElementById('shopLogoImg');
+        const shopTitle = document.getElementById('shopTitle');
+        const shopDescText = document.getElementById('shopDescText');
+        const tabMenu = document.getElementById('tabMenu');
+        const tabOrders = document.getElementById('tabOrders');
+        const tabMenuPanel = document.getElementById('tabMenuPanel');
+        const tabOrdersPanel = document.getElementById('tabOrdersPanel');
+        const menuForm = document.getElementById('menuForm');
+        const menuList = document.getElementById('menuList');
+        const menuCount = document.getElementById('menuCount');
+        const menuEmpty = document.getElementById('menuEmpty');
+        const editModal = document.getElementById('editModal');
+        const editForm = document.getElementById('editForm');
+
+        // Show shop setup if not set
+        function showShopSetup(){
+            shopSetupForm.style.display = '';
+            dashboard.style.display = 'none';
+        }
+        function showDashboard(){
+            shopSetupForm.style.display = 'none';
+            dashboard.style.display = '';
+        }
+        // Shop setup submit
+        shopSetupForm.onsubmit = function(e){
+            e.preventDefault();
+            const name = document.getElementById('shopName').value.trim();
+            const desc = document.getElementById('shopDesc').value.trim();
+            const logoFile = document.getElementById('shopLogo').files[0];
+            if(!name || !desc || !logoFile){
+                alert('Please fill all fields');
+                return;
+            }
+            const reader = new FileReader();
+            reader.onload = function(ev){
+                shop = { name, desc, logo: ev.target.result };
+                updateShopHeader();
+                showDashboard();
+            };
+            reader.readAsDataURL(logoFile);
+        };
+        // Update shop header
+        function updateShopHeader(){
+            shopLogoImg.src = shop.logo;
+            shopLogoImg.style.display = '';
+            shopTitle.textContent = shop.name;
+            shopDescText.textContent = shop.desc;
+        }
+        // Tabs
+        tabMenu.onclick = function(){
+            tabMenu.classList.add('active');
+            tabOrders.classList.remove('active');
+            tabMenuPanel.style.display = '';
+            tabOrdersPanel.style.display = 'none';
+        };
+        tabOrders.onclick = function(){
+            tabOrders.classList.add('active');
+            tabMenu.classList.remove('active');
+            tabMenuPanel.style.display = 'none';
+            tabOrdersPanel.style.display = '';
+        };
+        // Menu form submit
+        menuForm.onsubmit = function(e){
+            e.preventDefault();
+            const name = document.getElementById('itemName').value.trim();
+            const desc = document.getElementById('itemDesc').value.trim();
+            const price = parseFloat(document.getElementById('itemPrice').value);
+            const imgFile = document.getElementById('itemImg').files[0];
+            if(!name || !desc || isNaN(price) || !imgFile){
+                alert('Please fill all fields');
+                return;
+            }
+            const reader = new FileReader();
+            reader.onload = function(ev){
+                menuItems.push({ name, desc, price, img: ev.target.result, available: true });
+                updateMenuList();
+                menuForm.reset();
+            };
+            reader.readAsDataURL(imgFile);
+        };
+        // Toggle availability
+        function toggleAvailability(index){
+            menuItems[index].available = !menuItems[index].available;
+            updateMenuList();
+        }
+        // Open edit modal
+        function openEditModal(index){
+            currentEditIndex = index;
+            const item = menuItems[index];
+            document.getElementById('editItemName').value = item.name;
+            document.getElementById('editItemDesc').value = item.desc;
+            document.getElementById('editItemPrice').value = item.price.toFixed(2);
+            document.getElementById('editItemImg').value = '';
+            editModal.classList.add('show');
+        }
+        // Close edit modal
+        function closeEditModal(){
+            editModal.classList.remove('show');
+            currentEditIndex = -1;
+            editForm.reset();
+        }
+        // Save edited item
+        editForm.onsubmit = function(e){
+            e.preventDefault();
+            if(currentEditIndex === -1) return;
+            
+            const name = document.getElementById('editItemName').value.trim();
+            const desc = document.getElementById('editItemDesc').value.trim();
+            const price = parseFloat(document.getElementById('editItemPrice').value);
+            const imgFile = document.getElementById('editItemImg').files[0];
+            
+            if(!name || !desc || isNaN(price)){
+                alert('Please fill all fields');
+                return;
+            }
+            
+            menuItems[currentEditIndex].name = name;
+            menuItems[currentEditIndex].desc = desc;
+            menuItems[currentEditIndex].price = price;
+            
+            if(imgFile){
+                const reader = new FileReader();
+                reader.onload = function(ev){
+                    menuItems[currentEditIndex].img = ev.target.result;
+                    updateMenuList();
+                    closeEditModal();
+                };
+                reader.readAsDataURL(imgFile);
+            } else {
+                updateMenuList();
+                closeEditModal();
+            }
+        };
+        // Update menu list
+        function updateMenuList(){
+            menuList.innerHTML = '';
+            menuCount.textContent = menuItems.length;
+            if(menuItems.length === 0){
+                menuEmpty.style.display = '';
+                return;
+            }
+            menuEmpty.style.display = 'none';
+            menuItems.forEach((item, index) => {
+                const div = document.createElement('div');
+                div.className = 'menu-item' + (item.available ? '' : ' unavailable');
+                div.innerHTML = `
+                    <div class="availability-badge ${item.available ? 'available' : 'unavailable'}" onclick="toggleAvailability(${index}); event.stopPropagation();">
+                        ${item.available ? 'Available' : 'Out of Stock'}
+                    </div>
+                    <img class="menu-img" src="${item.img}" alt="${item.name}" onclick="openEditModal(${index})" />
+                    <div class="menu-name" onclick="openEditModal(${index})">${item.name}</div>
+                    <div class="menu-desc" onclick="openEditModal(${index})">${item.desc}</div>
+                    <div class="menu-price" onclick="openEditModal(${index})">₹${item.price.toFixed(2)}</div>
+                    <div class="edit-hint">Click to edit</div>
+                `;
+                menuList.appendChild(div);
+            });
+        }
+        // Close modal on outside click
+        editModal.onclick = function(e){
+            if(e.target === editModal){
+                closeEditModal();
+            }
+        };
+        // Initial
+        showShopSetup();
+    </script>
+</body>
+</html>

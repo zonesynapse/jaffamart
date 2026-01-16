@@ -1,0 +1,484 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>Jaffa Mart — Login / Register</title>
+
+    <!-- Simple mobile-first styles -->
+    <style>
+        :root{
+            --bg:#f4f5f6;
+            --card:#ffffff;
+            --muted:#8b8f94;
+            --accent:#111111;
+            --accent-2:#222222;
+            --pill:#efefef;
+            --pill-active:#ffffff;
+            --border:#eaeaea;
+            --shadow:0 6px 18px rgba(22,24,26,.06);
+            --btn-dark:#1c1c1c;
+            --btn-dark-2:#101010;
+            --radius:12px;
+            --gap:14px;
+            font-family: Inter, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial;
+        }
+
+        html,body{height:100%;margin:0;padding:0;}
+        body{
+            margin:0;
+            background:linear-gradient(180deg, #f6f7f8 0%, var(--bg) 100%);
+            display:flex;
+            align-items:center;
+            justify-content:center;
+            padding:24px;
+            box-sizing:border-box;
+            -webkit-font-smoothing:antialiased;
+            -moz-osx-font-smoothing:grayscale;
+        }
+
+        /* Card */
+        .auth-card{
+            width:min(460px,100%);
+            max-width:460px;
+            background:var(--card);
+            border-radius:18px;
+            box-shadow:var(--shadow);
+            padding:32px 24px;
+            border:1px solid rgba(15,15,15,0.03);
+            box-sizing:border-box;
+        }
+
+        .brand{
+            display:flex;
+            align-items:center;
+            gap:12px;
+            margin-bottom:6px;
+            justify-content:center;
+        }
+
+        .logo{
+            width:42px;
+            height:42px;
+            display:grid;
+            place-items:center;
+            border-radius:10px;
+            background:linear-gradient(180deg,#fff,#fafafa);
+            box-shadow:0 2px 6px rgba(0,0,0,.04);
+            border:1px solid rgba(0,0,0,0.04);
+        }
+
+        .brand h1{
+            font-size:22px;
+            margin:0;
+            color:var(--accent);
+            font-weight:600;
+            letter-spacing:-0.3px;
+        }
+
+        .subtitle{
+            text-align:center;
+            color:var(--muted);
+            font-size:14px;
+            margin:8px 0 24px;
+        }
+
+        /* Toggle (Login / Register) */
+        .toggle {
+            display:flex;
+            gap:8px;
+            background:var(--pill);
+            border-radius:12px;
+            padding:6px;
+            width:100%;
+            box-sizing:border-box;
+            justify-content:center;
+            margin-bottom:20px;
+        }
+        .toggle button{
+            border:0;
+            background:transparent;
+            padding:10px 20px;
+            border-radius:10px;
+            flex:1;
+            font-size:15px;
+            color:var(--muted);
+            cursor:pointer;
+            white-space:nowrap;
+            transition:all .2s ease;
+            font-weight:500;
+        }
+        .toggle button.active{
+            background:var(--pill-active);
+            color:var(--accent);
+            box-shadow:0 2px 6px rgba(16,18,20,.06);
+            border:1px solid rgba(0,0,0,0.04);
+        }
+
+        form{
+            display:flex;
+            flex-direction:column;
+            gap:16px;
+        }
+        
+        label{
+            font-size:14px;
+            color:var(--accent);
+            margin-bottom:6px;
+            font-weight:500;
+        }
+        
+        .field{
+            display:flex;
+            flex-direction:column;
+            gap:6px;
+        }
+        
+        input[type="text"],
+        input[type="email"],
+        input[type="password"],
+        select{
+            height:48px;
+            border-radius:10px;
+            border:1px solid var(--border);
+            padding:0 14px;
+            font-size:15px;
+            outline:none;
+            background:#fff;
+            transition:box-shadow .15s, border-color .15s;
+            color:var(--accent-2);
+            box-sizing:border-box;
+        }
+        
+        input::placeholder{
+            color:#b5b5b5;
+        }
+        
+        input:focus, select:focus{
+            border-color:rgba(17,24,33,.2);
+            box-shadow:0 4px 12px rgba(17,24,33,.06);
+        }
+
+        .submit{
+            margin-top:8px;
+            height:50px;
+            width:100%;
+            border-radius:10px;
+            border:0;
+            background:linear-gradient(180deg,var(--btn-dark),var(--btn-dark-2));
+            color:#fff;
+            font-weight:600;
+            font-size:16px;
+            cursor:pointer;
+            box-shadow:0 6px 16px rgba(17,24,33,.12);
+            transition:transform .1s ease;
+        }
+        
+        .submit:active{ 
+            transform:translateY(1px); 
+        }
+        
+        .submit:focus-visible{
+            outline:2px solid rgba(17,24,33,.25);
+            outline-offset:2px;
+        }
+
+        .small{
+            font-size:13px;
+            color:var(--muted);
+            text-align:center;
+            margin-top:12px;
+        }
+        
+        .small a{
+            color:var(--accent);
+            text-decoration:none;
+            font-weight:500;
+        }
+        
+        .small a:hover{
+            text-decoration:underline;
+        }
+
+        /* Hide register fields by default (mobile-first) */
+        .register-fields{
+            display:none;
+        }
+        
+        .auth-card.register .register-fields{
+            display:flex;
+        }
+        
+        .auth-card.register .login-fields{
+            display:none;
+        }
+
+        /* Desktop adjustments */
+        @media(min-width:880px){
+            body{padding:48px}
+            .auth-card{
+                width:420px;
+                padding:40px 32px;
+            }
+        }
+        
+        /* Small phones */
+        @media(max-width:400px){
+            .auth-card{
+                padding:24px 20px;
+            }
+            .toggle button{
+                padding:10px 16px;
+                font-size:14px;
+            }
+            .brand h1{
+                font-size:20px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <main class="auth-card" id="authCard" aria-live="polite">
+        <div class="brand">
+            <div class="logo" aria-hidden="true">
+                <!-- simple storefront icon -->
+                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                    <path d="M3 7h18" stroke="#111" stroke-width="1.2" stroke-linecap="round"/>
+                    <path d="M5 7v11a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1V7" stroke="#111" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"/>
+                    <path d="M3 7l1.5-3h15L21 7" stroke="#111" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"/>
+                </svg>
+            </div>
+            <h1>Jaffa Mart</h1>
+        </div>
+
+        <p class="subtitle">Food Delivery Platform</p>
+
+        <div class="toggle" role="tablist" aria-label="Authentication toggle">
+            <button id="btnLogin" type="button" class="active" role="tab" aria-selected="true" aria-controls="loginPanel">Login</button>
+            <button id="btnRegister" type="button" role="tab" aria-selected="false" aria-controls="registerPanel">Register</button>
+        </div>
+
+        <!-- Login form -->
+        <form id="loginForm" class="login-fields" aria-labelledby="btnLogin" onsubmit="handleLogin(event)">
+            <div class="field">
+                <label for="loginEmail">Email</label>
+                <input id="loginEmail" type="email" placeholder="Enter your email" required />
+            </div>
+
+            <div class="field">
+                <label for="loginPassword">Password</label>
+                <input id="loginPassword" type="password" placeholder="Enter your password" required />
+            </div>
+
+            <button type="submit" class="submit" id="loginBtn">Login</button>
+
+            <div class="small">Forgot password? <a href="#" onclick="handleForgotPassword(event)">Reset</a></div>
+        </form>
+
+        <!-- Register form -->
+        <form id="registerForm" class="register-fields" aria-labelledby="btnRegister" onsubmit="handleRegister(event)">
+            <div class="field">
+                <label for="regUsername">Username</label>
+                <input id="regUsername" type="text" placeholder="Choose a username" required />
+            </div>
+
+            <div class="field">
+                <label for="regEmail">Email</label>
+                <input id="regEmail" type="email" placeholder="Enter your email" required />
+            </div>
+
+            <div class="field">
+                <label for="regPassword">Password</label>
+                <input id="regPassword" type="password" placeholder="Create a password" required />
+            </div>
+
+            <div class="field">
+                <label for="regRole">Role</label>
+                <select id="regRole" aria-label="Select role">
+                    <option>Customer</option>
+                    <option>Shop Owner</option>
+                </select>
+            </div>
+
+            <button type="submit" class="submit" id="registerBtn">Register</button>
+            <div class="small">By registering you agree to our <a href="#" onclick="alert('Show TOS')">Terms</a>.</div>
+        </form>
+    </main>
+
+    <!-- Firebase SDKs -->
+    <script src="https://www.gstatic.com/firebasejs/10.7.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.7.0/firebase-auth-compat.js"></script>
+
+    <script>
+        // Firebase Configuration
+        const firebaseConfig = {
+            apiKey: "AIzaSyB_Da3i1qlQkXJWClRPyRy_gmxdbBXUvQA",
+            authDomain: "jaffamart-dfwxbh.firebaseapp.com",
+            projectId: "jaffamart-dfwxbh",
+            storageBucket: "jaffamart-dfwxbh.firebasestorage.app",
+            messagingSenderId: "412849759475",
+            appId: "1:412849759475:web:7275d9e1b640a8f4ed8386"
+        };
+
+        // Initialize Firebase
+        firebase.initializeApp(firebaseConfig);
+        const auth = firebase.auth();
+
+        // Wait for DOM to be ready
+        document.addEventListener('DOMContentLoaded', function() {
+            // Toggle behavior (simple and accessible)
+            const card = document.getElementById('authCard');
+            const btnLogin = document.getElementById('btnLogin');
+            const btnRegister = document.getElementById('btnRegister');
+
+        function showLogin(){
+            card.classList.remove('register');
+            btnLogin.classList.add('active');
+            btnRegister.classList.remove('active');
+            btnLogin.setAttribute('aria-selected','true');
+            btnRegister.setAttribute('aria-selected','false');
+            setTimeout(() => document.getElementById('loginEmail').focus(), 100);
+        }
+
+        function showRegister(){
+            card.classList.add('register');
+            btnRegister.classList.add('active');
+            btnLogin.classList.remove('active');
+            btnLogin.setAttribute('aria-selected','false');
+            btnRegister.setAttribute('aria-selected','true');
+            setTimeout(() => document.getElementById('regUsername').focus(), 100);
+        }
+
+        // Firebase Login
+        async function handleLogin(event) {
+            event.preventDefault();
+            const email = document.getElementById('loginEmail').value;
+            const password = document.getElementById('loginPassword').value;
+            const loginBtn = document.getElementById('loginBtn');
+            
+            loginBtn.disabled = true;
+            loginBtn.textContent = 'Logging in...';
+
+            try {
+                const userCredential = await auth.signInWithEmailAndPassword(email, password);
+                const user = userCredential.user;
+                
+                // Check if user is Shop Owner
+                const role = localStorage.getItem('userRole_' + user.uid);
+                
+                alert('Login successful!');
+                
+                if(role === 'Shop Owner') {
+                    window.location.href = 'shop.html';
+                } else {
+                    // Redirect customer to customer page (if you have one)
+                    alert('Welcome back, ' + user.email);
+                }
+            } catch (error) {
+                alert('Login failed: ' + error.message);
+            } finally {
+                loginBtn.disabled = false;
+                loginBtn.textContent = 'Login';
+            }
+        }
+
+        // Firebase Register
+        async function handleRegister(event) {
+            event.preventDefault();
+            const username = document.getElementById('regUsername').value;
+            const email = document.getElementById('regEmail').value;
+            const password = document.getElementById('regPassword').value;
+            const role = document.getElementById('regRole').value;
+            const registerBtn = document.getElementById('registerBtn');
+            
+            if(password.length < 6) {
+                alert('Password must be at least 6 characters long');
+                return;
+            }
+
+            registerBtn.disabled = true;
+            registerBtn.textContent = 'Registering...';
+
+            try {
+                const userCredential = await auth.createUserWithEmailAndPassword(email, password);
+                const user = userCredential.user;
+                
+                // Update user profile with username
+                await user.updateProfile({ displayName: username });
+                
+                // Store user role in localStorage (or better: use Firestore)
+                localStorage.setItem('userRole_' + user.uid, role);
+                
+                alert('Registration successful! Redirecting...');
+                
+                if(role === 'Shop Owner') {
+                    window.location.href = 'shop.html';
+                } else {
+                    // Redirect customer to customer page
+                    alert('Welcome, ' + username + '!');
+                }
+            } catch (error) {
+                alert('Registration failed: ' + error.message);
+            } finally {
+                registerBtn.disabled = false;
+                registerBtn.textContent = 'Register';
+            }
+        }
+
+        // Forgot Password
+        async function handleForgotPassword(event) {
+            event.preventDefault();
+            const email = prompt('Enter your email address:');
+            
+            if(!email) return;
+
+            try {
+                await auth.sendPasswordResetEmail(email);
+                alert('Password reset email sent to ' + email);
+            } catch (error) {
+                alert('Error: ' + error.message);
+            }
+        }
+
+        // Listen to auth state changes
+        auth.onAuthStateChanged((user) => {
+            if(user) {
+                console.log('User logged in:', user.email);
+            } else {
+                console.log('User logged out');
+            }
+        });
+
+        // Attach click handlers
+        btnLogin.addEventListener('click', (e) => {
+            e.preventDefault();
+            showLogin();
+        });
+        
+        btnRegister.addEventListener('click', (e) => {
+            e.preventDefault();
+            showRegister();
+        });
+
+        // Keyboard support
+        btnLogin.addEventListener('keydown', (e)=>{ 
+            if(e.key==='Enter' || e.key===' ') { 
+                e.preventDefault(); 
+                showLogin(); 
+            } 
+        });
+        
+        btnRegister.addEventListener('keydown', (e)=>{ 
+            if(e.key==='Enter' || e.key===' ') { 
+                e.preventDefault(); 
+                showRegister(); 
+            } 
+        });
+
+        // Start on login (mobile-first)
+        showLogin();
+        
+        }); // End DOMContentLoaded
+    </script>
+</body>
+</html>
